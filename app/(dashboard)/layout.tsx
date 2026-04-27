@@ -23,8 +23,8 @@ export default function DashboardLayout({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" />
+      <div className="flex items-center justify-center min-h-screen" suppressHydrationWarning>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary" suppressHydrationWarning />
       </div>
     )
   }
