@@ -25,12 +25,12 @@ export function ClientSearch({ clients, onFilter }: ClientSearchProps) {
 
     return clients.filter(client => {
       if (searchType === 'studentId') {
-        return client.studentId.toLowerCase().includes(lowerSearch)
+        return client.studentId.toLowerCase().startsWith(lowerSearch)
       } else if (searchType === 'name') {
         return client.name.toLowerCase().includes(lowerSearch)
       } else {
         return (
-          client.studentId.toLowerCase().includes(lowerSearch) ||
+          client.studentId.toLowerCase().startsWith(lowerSearch) ||
           client.name.toLowerCase().includes(lowerSearch) ||
           client.email.toLowerCase().includes(lowerSearch) ||
           client.department.toLowerCase().includes(lowerSearch)
