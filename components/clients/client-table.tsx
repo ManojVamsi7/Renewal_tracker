@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Client } from '@/lib/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Edit2, Trash2 } from 'lucide-react'
+import { Edit2, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import { format } from 'date-fns'
 import {
   AlertDialog,
@@ -26,10 +26,50 @@ interface ClientTableProps {
   onDeleteMultiple?: (ids: string[]) => void
 }
 
+type SortKey = keyof Client | 'studentId'
+type SortConfig = { key: SortKey; direction: 'asc' | 'desc' }
+
 export function ClientTable({ clients, onDelete, onDeleteMultiple }: ClientTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [showDeleteMultiple, setShowDeleteMultiple] = useState(false)
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'studentId', direction: 'asc' })
+
+  const sortedClients = useMemo(() => {
+    const sortableClients = [...clients]
+    if (sortConfig.key) {
+      sortableClients.sort((a, b) => {
+        const aValue = a[sortConfig.key as keyof Client]
+        const bValue = b[sortConfig.key as keyof Client]
+
+        if (aValue === undefined || bValue === undefined) return 0
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1
+        }
+        return 0
+      })
+    }
+    return sortableClients
+  }, [clients, sortConfig])
+
+  const requestSort = (key: SortKey) => {
+    let direction: 'asc' | 'desc' = 'asc'
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc'
+    }
+    setSortConfig({ key, direction })
+  }
+
+  const getSortIcon = (key: SortKey) => {
+    if (sortConfig.key !== key) return <ArrowUpDown className="w-3 h-3 ml-1 opacity-50" />
+    return sortConfig.direction === 'asc' ? 
+      <ArrowUp className="w-3 h-3 ml-1 text-primary" /> : 
+      <ArrowDown className="w-3 h-3 ml-1 text-primary" />
+  }
 
   const toggleSelectAll = () => {
     if (selectedIds.size === clients.length && clients.length > 0) {
@@ -88,18 +128,46 @@ export function ClientTable({ clients, onDelete, onDeleteMultiple }: ClientTable
                       aria-label="Select all"
                     />
                   </th>
-                  <th className="text-left py-3 px-2 font-medium">Student ID</th>
-                  <th className="text-left py-3 px-2 font-medium">Name</th>
-                  <th className="text-left py-3 px-2 font-medium">Email</th>
-                  <th className="text-left py-3 px-2 font-medium">Department</th>
-                  <th className="text-left py-3 px-2 font-medium">Monthly</th>
-                  <th className="text-left py-3 px-2 font-medium">Renewal Date</th>
-                  <th className="text-left py-3 px-2 font-medium">Status</th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('studentId')}>
+                      Student ID {getSortIcon('studentId')}
+                    </button>
+                  </th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('name')}>
+                      Name {getSortIcon('name')}
+                    </button>
+                  </th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('email')}>
+                      Email {getSortIcon('email')}
+                    </button>
+                  </th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('department')}>
+                      Department {getSortIcon('department')}
+                    </button>
+                  </th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('monthlyAmount')}>
+                      Monthly {getSortIcon('monthlyAmount')}
+                    </button>
+                  </th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('renewalDate')}>
+                      Renewal Date {getSortIcon('renewalDate')}
+                    </button>
+                  </th>
+                  <th className="text-left py-3 px-2 font-medium">
+                    <button className="flex items-center hover:text-primary transition-colors" onClick={() => requestSort('status')}>
+                      Status {getSortIcon('status')}
+                    </button>
+                  </th>
                   <th className="text-left py-3 px-2 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {clients.map((client) => (
+                {sortedClients.map((client) => (
                   <tr key={client.id} className="border-b border-border hover:bg-muted/50">
                     <td className="py-3 px-2">
                       <Checkbox 
