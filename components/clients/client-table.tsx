@@ -123,7 +123,7 @@ export function ClientTable({ clients, onDelete, onDeleteMultiple }: ClientTable
           )}
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="overflow-auto max-h-[calc(100vh-220px)] border rounded-md">
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-card z-10 shadow-sm">
                 <tr className="border-b border-border">
