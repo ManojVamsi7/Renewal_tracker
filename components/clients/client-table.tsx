@@ -44,6 +44,12 @@ export function ClientTable({ clients, onDelete, onDeleteMultiple }: ClientTable
 
         if (aValue === undefined || bValue === undefined) return 0
 
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sortConfig.direction === 'asc' 
+            ? aValue.localeCompare(bValue, undefined, { numeric: true })
+            : bValue.localeCompare(aValue, undefined, { numeric: true })
+        }
+
         if (aValue < bValue) {
           return sortConfig.direction === 'asc' ? -1 : 1
         }
