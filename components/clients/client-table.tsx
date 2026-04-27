@@ -125,7 +125,7 @@ export function ClientTable({ clients, onDelete, onDeleteMultiple }: ClientTable
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className="sticky top-0 bg-card z-10 shadow-sm">
                 <tr className="border-b border-border">
                   <th className="text-left py-3 px-2 font-medium w-10">
                     <Checkbox 
